@@ -12,7 +12,7 @@ export class CryptoService {
   generateRsaKeys(): Promise<any> {
     const promise = new Promise((resolve, reject) => {
       forge.pki.rsa.generateKeyPair(
-        { bits: 2048, workers: -1 },
+        { bits: 2048, workers: 2 },
         (err, keypair) => {
           if (!err) {
             resolve(keypair);

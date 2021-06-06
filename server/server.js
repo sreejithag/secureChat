@@ -6,7 +6,8 @@ const loki = require('lokijs')
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {
     cors: {
-      origin: 'http://localhost:4200',
+      origin: ['*'],
+
     }
   });
   
