@@ -74,7 +74,7 @@ export class ChatWindowComponent implements OnInit {
                         this.messages +
                         `
             <div class="flex items-end">
-             <div class="flex flex-col space-y-2 max-w-xs mx-2 order-2 items-start">
+             <div class="flex flex-col space-y-2 max-w-xs mx-2 order-1 items-start">
                 <div><span class="px-4 py-2 rounded-lg inline-block bg-gray-300 text-gray-600">${data}</span></div>
              </div>
           </div>
@@ -155,8 +155,8 @@ export class ChatWindowComponent implements OnInit {
         `
       <div class="chat-message">
       <div class="flex items-end justify-end">
-         <div class="flex flex-col space-y-2  max-w-xs mx-2 order-1 items-end">
-            <div><span class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white ">${chat.value.message}</span></div>
+         <div class="flex flex-col space-y-2  max-w-xs mx-2 order-2 items-end">
+            <div><span class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 ">${chat.value.message}</span></div>
          </div>
       </div>
    </div>

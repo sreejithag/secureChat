@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  SOCKET_ENDPOINT: 'http://localhost:3000',
+  SOCKET_ENDPOINT: 'https://my-chat-server001.herokuapp.com/',
   GETROOM_URL: 'http://localhost:3000/getroom',
-  HOST_Name:'http://localhost:4200',
-  TITLE:'MY CHAT'
+  HOST_Name: 'http://localhost:4200',
+  TITLE: 'MY CHAT',
 };
 
 /*
