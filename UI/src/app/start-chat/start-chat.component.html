@@ -49,10 +49,11 @@
               <label for="email" class="text-sm font-semibold text-gray-500">Chat URL</label>
               <input
                 type="text"
+                id="chatUrl"
                 [(ngModel)] = "chat_url"
-                id="chat-url"
-                disabled
+                readonly
                 class="px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200"
+                #formInputText 
               />
             </div>
             
