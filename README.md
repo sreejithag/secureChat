@@ -1,3 +1,3 @@
-# mychat
+# Secure Chat
 
-# An end to end encrypted realtime chat application using nodejs, Angular and socketio
+# Simple end to end encrypted web chat build using Angular,Node.js and socket.io 
