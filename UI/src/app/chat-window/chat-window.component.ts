@@ -27,6 +27,8 @@ export class ChatWindowComponent implements OnInit {
 
   isKeypairGenerated: boolean = false;
 
+  ClientPublicKeyPem: string = '';
+
   constructor(
     private socketService: SocketioService,
     private route: ActivatedRoute,
@@ -39,7 +41,7 @@ export class ChatWindowComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe({
       next: (params) => {
-        let chatid = params.get('chatid') || '';
+        const chatid = params.get('chatid') || '';
 
         //validate if chat is valid by validating the uuid or not and sets up the socket connection
         if (this.socketService.validateChatId(chatid)) {
@@ -60,7 +62,7 @@ export class ChatWindowComponent implements OnInit {
 
                   this.loadingMsg = 'Waiting for the client..';
 
-                  let keypairPem = this.crypto.convertPublickeyToPem(
+                  const keypairPem = this.crypto.convertPublickeyToPem(
                     this.Keypair.publicKey
                   );
                   this.socketService.sendPublicKey(keypairPem, this.chatid);
@@ -102,7 +104,7 @@ export class ChatWindowComponent implements OnInit {
 
     this.socketService.recivePublicKey().subscribe((publicKeyPem) => {
       console.log('Recived client publickey ');
-      localStorage.setItem('ClientPublicKeyPem', publicKeyPem);
+      sessionStorage.setItem('ClientPublicKeyPem', publicKeyPem);
       this.haveClientPublicKey = true;
       this.isLoading = false;
     });
@@ -112,7 +114,7 @@ export class ChatWindowComponent implements OnInit {
       this.isConnected = true;
       this.socketService.iamOnline(this.chatid);
       if (this.isKeypairGenerated) {
-        let keypairPem = this.crypto.convertPublickeyToPem(
+        const keypairPem = this.crypto.convertPublickeyToPem(
           this.Keypair.publicKey
         );
         this.socketService.sendPublicKey(keypairPem, this.chatid);
@@ -122,7 +124,7 @@ export class ChatWindowComponent implements OnInit {
 
     this.socketService.ispublicKeyNeeded().subscribe((data) => {
       if (this.isKeypairGenerated) {
-        let keypairPem = this.crypto.convertPublickeyToPem(
+        const keypairPem = this.crypto.convertPublickeyToPem(
           this.Keypair.publicKey
         );
         this.socketService.sendPublicKey(keypairPem, this.chatid);

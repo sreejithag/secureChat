@@ -33,7 +33,7 @@ export class SocketioService {
   }
 
   userJoined() {
-    let observable = new Observable<any>((observer) => {
+    const observable = new Observable<any>((observer) => {
       this.socket.on('connected', (data: string) => {
         observer.next(data);
       });
@@ -45,65 +45,67 @@ export class SocketioService {
     return observable;
   }
 
-  sentMessage(roomid: string, plainTextMessage: string, keypair: any) {
-    let clinetPublicKey = this.crypto.convertPemToPublickey(
-      localStorage.getItem('ClientPublicKeyPem')
-    );
-    this.crypto.encryptAes(plainTextMessage).then((data) => {
-      let messasgeCipher = data.encrypted;
+  async sentMessage(roomid: string, plainTextMessage: string, keypair: any) {
+    try {
+      const clinetPublicKey = this.crypto.convertPemToPublickey(
+        sessionStorage.getItem('ClientPublicKeyPem')
+      );
 
-      this.crypto
-        .encryptRsa(data.passPhrase, clinetPublicKey)
-        .then((aesKeyEncrypted) => {
-          let aesKeyCipher = aesKeyEncrypted;
-          this.crypto
-            .signMessage(messasgeCipher, keypair.privateKey)
-            .then((sign) => {
-              let signature = sign;
-
-              let message = new Message(
-                messasgeCipher,
-                aesKeyCipher,
-                signature
-              );
-
-              this.socket.emit('message', { roomid: roomid, message: message });
-            });
-        });
-    });
+      const data = await this.crypto.encryptAes(plainTextMessage);
+      const messageCipher = data.encrypted;
+      const aesKeyCipher = await this.crypto.encryptRsa(
+        data.passPhrase,
+        clinetPublicKey
+      );
+      const signature = await this.crypto.signMessage(
+        messageCipher,
+        keypair.privateKey
+      );
+      const message = new Message(messageCipher, aesKeyCipher, signature);
+      this.socket.emit('message', { roomid: roomid, message: message });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   reciveMessage(privateKey: any) {
-    let observable = new Observable<any>((observer) => {
-      this.socket.on('message', (data: any) => {
+    const observable = new Observable<any>((observer) => {
+      this.socket.on('message', async (data: any) => {
         console.log('Recived message');
-        let signature = data.signature;
-        let messageCipher = data.messasgeCipher;
-        let aesKeyCipher = data.aesKeyCipher;
-        let clinetPublicKey = this.crypto.convertPemToPublickey(
-          localStorage.getItem('ClientPublicKeyPem')
-        );
-        this.crypto
-          .verifyMessage(messageCipher, clinetPublicKey, signature)
-          .then((verified) => {
-            if (verified) {
-              console.log('Message signature Verified');
-              this.crypto
-                .decryptRsa(aesKeyCipher, privateKey)
-                .then((aeskey) => {
-                  console.log('Message Aes key decrypted');
-                  this.crypto
-                    .decryptAes(messageCipher, aeskey)
-                    .then((message) => {
-                      console.log('Message decrypted');
-                      observer.next(message);
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }
-          });
+
+        try {
+          const signature = data.signature;
+          const messageCipher = data.messasgeCipher;
+          const aesKeyCipher = data.aesKeyCipher;
+          const clinetPublicKey = this.crypto.convertPemToPublickey(
+            sessionStorage.getItem('ClientPublicKeyPem')
+          );
+
+          const isValidMessage = await this.crypto.verifyMessage(
+            messageCipher,
+            clinetPublicKey,
+            signature
+          );
+
+          if (isValidMessage) {
+            console.log('Message signature Verified');
+
+            const aeskey = await this.crypto.decryptRsa(
+              aesKeyCipher,
+              privateKey
+            );
+
+            console.log('Message Aes key decrypted');
+
+            const message = await this.crypto.decryptAes(messageCipher, aeskey);
+
+            console.log('Message decrypted');
+
+            observer.next(message);
+          }
+        } catch (err) {
+          console.log(err);
+        }
       });
       return () => {
         this.socket.disconnect();
@@ -118,7 +120,7 @@ export class SocketioService {
   }
 
   isOnline() {
-    let observable = new Observable<any>((observer) => {
+    const observable = new Observable<any>((observer) => {
       this.socket.on('online', (data: any) => {
         observer.next(data);
       });
@@ -144,7 +146,7 @@ export class SocketioService {
   }
 
   ispublicKeyNeeded() {
-    let observable = new Observable<any>((observer) => {
+    const observable = new Observable<any>((observer) => {
       this.socket.on('publickeyRequest', (data: any) => {
         observer.next(data);
       });
@@ -157,7 +159,7 @@ export class SocketioService {
   }
 
   recivePublicKey() {
-    let observable = new Observable<any>((observer) => {
+    const observable = new Observable<any>((observer) => {
       this.socket.on('publickeyExchange', (data: any) => {
         observer.next(data);
       });
