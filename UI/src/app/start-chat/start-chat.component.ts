@@ -2,42 +2,40 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SocketioService } from '../socketio.service';
 import { Router } from '@angular/router';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-start-chat',
   templateUrl: './start-chat.component.html',
-  styleUrls: ['./start-chat.component.css']
+  styleUrls: ['./start-chat.component.css'],
 })
 export class StartChatComponent implements OnInit {
+  isLoading: boolean = false;
+  showSetup: boolean = true;
+  isChatSetuped: boolean = false;
+  chatid: string = '';
+  buttonText: string = 'Copy to clipboard';
 
-  isLoading:boolean = false;
-  showSetup:boolean = true;
-  isChatSetuped:boolean = false;
-  chatid:string='';
-  buttonText:string = 'Copy to clipboard'
+  public title: String = environment.TITLE;
 
-  public title:String = environment.TITLE;
+  chat_url: string = '';
 
-  chat_url:string = '';
+  constructor(
+    private socketio: SocketioService,
+    private router: Router,
+    private clipboardApi: ClipboardService
+  ) {}
 
-  
+  ngOnInit(): void {}
 
-  constructor(private socketio:SocketioService,private router: Router) { }
-
-  
-
-  ngOnInit(): void {
+  //method to hide setup and show url screen
+  hideSetup() {
+    this.showSetup = false;
+    this.isChatSetuped = true;
   }
 
-  //method to hide setup and show url screen 
-  hideSetup(){
-    this.showSetup=false;
-    this.isChatSetuped=true;
-  }
-
-
-  start(){
-  //  this.isLoading=true
+  start() {
+    //  this.isLoading=true
     // this.socketio.getRoomId().subscribe({
     //   next: data => {
     //     this.isLoading=false
@@ -50,26 +48,23 @@ export class StartChatComponent implements OnInit {
     //     console.log('error'+ error.message)
     //     this.isLoading=false
     //   }
-      
+
     // })
 
-    this.isLoading=false
-    this.chatid=this.socketio.getChatId()
-    this.chat_url=environment.HOST_Name+'/chat/'+this.chatid
-    this.isChatSetuped = true
-    this.showSetup = false
-
-    
+    this.isLoading = false;
+    this.chatid = this.socketio.getChatId();
+    this.chat_url = environment.HOST_Name + '/chat/' + this.chatid;
+    this.isChatSetuped = true;
+    this.showSetup = false;
   }
 
-  copyToClipboard(){
-    
-    navigator.clipboard.writeText(this.chat_url).then().catch(e => console.error(e))
-    this.buttonText='Copied'
+  copyToClipboard() {
+    // navigator.clipboard.writeText(this.chat_url).then().catch(e => console.error(e))
+    this.clipboardApi.copyFromContent(this.chat_url);
+    this.buttonText = 'Copied';
   }
 
-  routeToChat(){
-    this.router.navigate(['/chat/'+this.chatid])
+  routeToChat() {
+    this.router.navigate(['/chat/' + this.chatid]);
   }
-
 }

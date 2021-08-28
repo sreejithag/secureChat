@@ -4,9 +4,10 @@ const cors = require('cors');
 const Room = require('./model/rooms')
 const loki = require('lokijs')
 const server = require('http').Server(app)
+app.use(cors({ origin: '*', credentials: true }));
 const io = require('socket.io')(server, {
     cors: {
-      origin: 'http://localhost:4200',
+      origin: '*',
     }
   });
   
